@@ -3,6 +3,7 @@ import Paper from '@material-ui/core/Paper'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import MapPaletteSearch from './MapPaletteSearch'
+import SymbolSet from './SymbolSet'
 
 
 class MainPanel extends React.Component {
@@ -16,7 +17,8 @@ class MainPanel extends React.Component {
   }
 
   showMapPalette () {
-    return <MapPaletteSearch/>
+    const compontents = { 'header': <MapPaletteSearch/>, 'list': <SymbolSet/> }
+    return compontents
   }
 
   render () {
@@ -25,13 +27,14 @@ class MainPanel extends React.Component {
     const style = {
       height: 'auto'
     }
-
+    const components = showComponents()
     return (
       <Paper
         className={ classes.paper }
         elevation={ 4 }
         style={ style }
-      > { showComponents() }
+      > { components.header }
+        { components.list}
       </Paper>
     )
   }

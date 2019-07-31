@@ -10,6 +10,7 @@ class MapPaletteSearch extends React.Component {
     return (
       <InputBase
         className={ classes.searchField }
+        placeholder={ 'Search...' }
         autoFocus
       />
     )

@@ -7,6 +7,7 @@ import L from 'leaflet'
 import * as R from 'ramda'
 import OSD from './OSD'
 import Spotlight from './spotlight/Spotlight'
+import MainPanel from './mainPanel/MainPanel'
 import { spotlightOptions } from './App.spotlight'
 import addBookmarkOptions from './App.bookmark'
 import selection from './App.selection'
@@ -60,6 +61,7 @@ class App extends React.Component {
     const panels = { ...this.state.panels }
     panels[which] = fn
     this.setState({ ...this.state, panels })
+
   }
 
   closePanel (which) {
@@ -107,6 +109,8 @@ class App extends React.Component {
     selection.on('deselected', () => {
       this.closePanel('right')
     })
+
+    this.openPanel('left', () => <MainPanel/>)
   }
 
   render () {
@@ -129,6 +133,9 @@ class App extends React.Component {
           />
           <div className={ this.props.classes.contentPanel }>
             { panels.right() }
+          </div>
+          <div className={ this.props.classes.contentPanel }>
+            { panels.left() }
           </div>
         </div>
       </div>

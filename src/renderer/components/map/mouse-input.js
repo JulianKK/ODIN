@@ -14,12 +14,14 @@ const cancel = () => inputMethod ? inputMethod() : () => {}
 const pickPoint = options => {
 
   cancel()
-
+  let inputCount = 0
+  const maxCount = options.maxCount || 1
   const prompt = options.prompt || ''
   evented.emit('OSD_MESSAGE', { message: prompt })
   const container = map._container
 
   const click = event => {
+    inputCount++
     options.picked && options.picked(event.latlng)
 
     // Visual feedback:
@@ -29,8 +31,7 @@ const pickPoint = options => {
     const reset = () => (container.style.filter = originalFilter)
     container.style.filter = 'invert(100%)'
     setTimeout(reset, 50)
-
-    disposables.dispose()
+    if (inputCount >= maxCount && !options.infClick) disposables.dispose()
   }
 
   const disposables = disposable.of({})

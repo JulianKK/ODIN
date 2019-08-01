@@ -4,6 +4,8 @@ import symbolSet from '../../model/mapPalette-symbolSet'
 import ExpandLess from '@material-ui/icons/ExpandLess'
 import ExpandMore from '@material-ui/icons/ExpandMore'
 import Symbols from './Symbols'
+import { withStyles } from '@material-ui/core/styles'
+import PropTypes from 'prop-types'
 
 
 class SymbolSet extends React.Component {
@@ -26,6 +28,7 @@ class SymbolSet extends React.Component {
       height: 'auto'
     }
     const { symbolSet } = this.state
+    const { classes } = this.props
     const listItems = () => (symbolSet || []).map(item => (
       <React.Fragment key= {item.key}>
         <ListItem
@@ -47,10 +50,23 @@ class SymbolSet extends React.Component {
       <List
         elevation={ 4 }
         style={ style }
+        className={ classes.list }
       > { listItems()}
       </List>
     )
   }
 }
 
-export default SymbolSet
+const styles = theme => ({
+  list: {
+    maxHeight: 'fill-available',
+    gridArea: 'content',
+    overflow: 'auto'
+  }
+})
+
+SymbolSet.propTypes = {
+  classes: PropTypes.any.isRequired
+}
+
+export default withStyles(styles)(SymbolSet)

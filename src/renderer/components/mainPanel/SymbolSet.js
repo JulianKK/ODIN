@@ -1,6 +1,5 @@
 import React from 'react'
 import { List, ListItem, Collapse } from '@material-ui/core'
-import symbolSet from '../../model/mapPalette-symbolSet'
 import ExpandLess from '@material-ui/icons/ExpandLess'
 import ExpandMore from '@material-ui/icons/ExpandMore'
 import Symbols from './Symbols'
@@ -9,15 +8,9 @@ import PropTypes from 'prop-types'
 
 
 class SymbolSet extends React.Component {
-  constructor (props) {
-    super(props)
-    this.state = {
-      symbolSet: symbolSet()
-    }
-  }
 
   onClick (key) {
-    const symbolSet = this.state.symbolSet
+    const symbolSet = this.props.symbolSet
     const index = symbolSet.findIndex(item => item.key === key)
     symbolSet[index].open = !symbolSet[index].open
     this.setState({ ...this.state, symbolSet })
@@ -27,8 +20,7 @@ class SymbolSet extends React.Component {
     const style = {
       height: 'auto'
     }
-    const { symbolSet } = this.state
-    const { classes } = this.props
+    const { classes, symbolSet } = this.props
     const listItems = () => (symbolSet || []).map(item => (
       <React.Fragment key= {item.key}>
         <ListItem
@@ -41,7 +33,7 @@ class SymbolSet extends React.Component {
           { item.text }
         </ListItem>
         <Collapse in={item.open} timeout="auto" unmountOnExit>
-          <Symbols symbols={item.symbols} />
+          <Symbols symbols={item.symbols} styleClass={'symbolInSet'} />
         </Collapse>
       </React.Fragment>
 
@@ -66,7 +58,8 @@ const styles = theme => ({
 })
 
 SymbolSet.propTypes = {
-  classes: PropTypes.any.isRequired
+  classes: PropTypes.any.isRequired,
+  symbolSet: PropTypes.any.isRequired
 }
 
 export default withStyles(styles)(SymbolSet)

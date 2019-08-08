@@ -2,8 +2,16 @@ import React from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
 import { InputBase } from '@material-ui/core'
+import { search } from '../../stores/symbolDummyStore'
 
 class MapPaletteSearch extends React.Component {
+
+
+  onChange (value) {
+    const update = this.props.update
+    update(search(value))
+  }
+
   render () {
     const { classes } = this.props
 
@@ -11,6 +19,7 @@ class MapPaletteSearch extends React.Component {
       <InputBase
         className={ classes.searchField }
         placeholder={ 'Search...' }
+        onChange={ event => this.onChange(event.target.value) }
         autoFocus
       />
     )
@@ -31,5 +40,9 @@ const styles = theme => ({
     gridArea: 'input'
   }
 })
+
+MapPaletteSearch.propTypes = {
+  update: PropTypes.func.isRequired
+}
 
 export default withStyles(styles)(MapPaletteSearch)

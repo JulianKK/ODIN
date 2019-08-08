@@ -53,6 +53,7 @@
   "dependencies": {
     "@material-ui/core": "^3.9.3",
     "@material-ui/icons": "^4.2.1",
+    "elasticlunr": "^0.9.5",
     "electron-settings": "^3.2.0",
     "geodesy": "^2.0.1",
     "leaflet": "1.5.1",

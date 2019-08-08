@@ -1,7 +1,7 @@
 import symbolSetData from '../stores/symbolSetStore'
 import { ListItemText } from '@material-ui/core'
 import React from 'react'
-import symbolList from './mapPalette-symbol'
+import { symbolListFromSidc } from './mapPalette-symbol'
 
 const symbolSet = () => {
   const data = symbolSetData()
@@ -9,7 +9,7 @@ const symbolSet = () => {
     key: element.name,
     text: <ListItemText primary={ element.name }/>,
     open: false,
-    symbols: symbolList(element.content)
+    symbols: symbolListFromSidc(element.content)
   }))
 }
 

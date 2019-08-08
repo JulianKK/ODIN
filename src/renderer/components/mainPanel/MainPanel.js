@@ -4,6 +4,9 @@ import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import MapPaletteSearch from './MapPaletteSearch'
 import SymbolSet from './SymbolSet'
+import symbolSet from '../../model/mapPalette-symbolSet'
+import Symbols from './Symbols'
+import { symbolList } from '../../model/mapPalette-symbol'
 
 
 class MainPanel extends React.Component {
@@ -12,13 +15,28 @@ class MainPanel extends React.Component {
     super(props)
 
     this.state = {
-      showComponents: () => this.showMapPalette()
+      showComponents: () => this.showSymbolsets(),
+      symbolSet: symbolSet(),
+      symbols: []
     }
   }
 
-  showMapPalette () {
-    const compontents = { 'header': <MapPaletteSearch/>, 'list': <SymbolSet/> }
+  showSymbolsets () {
+    const { symbolSet } = this.state
+    const compontents = { 'header': <MapPaletteSearch update={ resultList => this.updateResultList(resultList) }/>, 'list': <SymbolSet symbolSet={ symbolSet } /> }
     return compontents
+  }
+
+  showSearchResults () {
+    const { symbols } = this.state
+    const compontents = { 'header': <MapPaletteSearch update={ resultList => this.updateResultList(resultList) }/>, 'list': <Symbols symbols={ symbols } styleClass={ 'symbols' }/> }
+    return compontents
+  }
+
+  updateResultList (resultList) {
+    const showComponents = resultList.length === 0 ? () => this.showSymbolsets() : () => this.showSearchResults()
+    const symbols = symbolList(resultList)
+    this.setState({ ...this.state, showComponents, symbols })
   }
 
   render () {

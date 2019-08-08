@@ -1,21 +1,42 @@
 import React from 'react'
+import L from 'leaflet'
 import { List, ListItem } from '@material-ui/core'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
+import mouseInput from '../map/mouse-input'
+import ms from 'milsymbol'
+import evented from '../../evented'
 
 
 class Symbols extends React.Component {
+
+  onClick (sidc) {
+    mouseInput.pickPoint({
+      prompt: 'Pick a location...',
+      picked: latlng => {
+        const marker = L.marker(latlng)
+        const icon = new ms.Symbol(sidc, { size: 34 })
+        marker.setIcon(L.divIcon({
+          className: '',
+          html: icon.asSVG(),
+          iconAnchor: new L.Point(icon.getAnchor().x, icon.getAnchor().y)
+        }))
+        evented.emit('Marker Created', marker)
+      }
+    })
+  }
 
   render () {
     const style = {
       height: 'auto'
     }
-    const { symbols, classes } = this.props
-    const listItems = () => (symbols || []).map(item => (
+    const { symbols, classes, styleClass } = this.props
+    const listItems = () => (symbols || []).map((item, index) => (
       <ListItem
         button
         divider={ true }
-        key={ item.key }
+        key={ index}
+        onClick={ () => this.onClick(item.sidc) }
       >
         { item.avatar }
         { item.text }
@@ -26,7 +47,7 @@ class Symbols extends React.Component {
       <List
         elevation={ 4 }
         style={ style }
-        className={ classes.blub }
+        className={ classes[styleClass] }
       > { listItems()}
       </List>
     )
@@ -34,15 +55,21 @@ class Symbols extends React.Component {
 }
 
 const styles = theme => ({
-  blub: {
+  symbolInSet: {
     maxHeight: 'auto',
     gridArea: 'content'
+  },
+  symbols: {
+    maxHeight: 'fill-available',
+    gridArea: 'content',
+    overflow: 'auto'
   }
 })
 
 Symbols.propTypes = {
   symbols: PropTypes.any.isRequired,
-  classes: PropTypes.any.isRequired
+  classes: PropTypes.any.isRequired,
+  styleClass: PropTypes.any.isRequired
 }
 
 export default withStyles(styles)(Symbols)

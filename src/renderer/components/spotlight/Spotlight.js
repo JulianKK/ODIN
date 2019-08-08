@@ -11,8 +11,19 @@ class Spotlight extends React.Component {
     super(props)
     this.state = {
       rows: [],
-      value: ''
+      value: '',
+      selectionIndex: -1
     }
+  }
+
+  setSelectionIndex (selectionIndex) {
+    if (selectionIndex < 0 || selectionIndex >= this.state.rows.length) return
+    this.setState({ ...this.state, selectionIndex })
+  }
+
+  invokeAction (action, rowPos) {
+    const fun = this.state.rows[rowPos][action] || (() => {})
+    fun()
   }
 
   handleKeyDown (event) {
@@ -27,6 +38,12 @@ class Spotlight extends React.Component {
       const { searchItems } = this.props.options
       if (!searchItems) return
       searchItems.updateFilter(value)
+      if (this.state.rows.length < 0) {
+        const selectionIndex = -1
+        this.setState({ ...this.state, selectionIndex })
+      } else if (this.state.selectionIndex !== -1) {
+        this.setSelectionIndex(0)
+      }
     }
 
     this.setState({ ...this.state, value }, updateFilter)
@@ -48,7 +65,8 @@ class Spotlight extends React.Component {
   render () {
     const { classes, options } = this.props
     const { searchItems } = options
-    const { value, rows } = this.state
+    const { value, rows, selectionIndex } = this.state
+
     const style = {
       height: rows.length ? 'auto' : 'max-content'
     }
@@ -58,6 +76,9 @@ class Spotlight extends React.Component {
         rows={ rows }
         options={ options }
         onChange={ value => this.handleChange(value) }
+        selectionIndex={ selectionIndex }
+        setSelectionIndex={ selectionIndex => this.setSelectionIndex(selectionIndex) }
+        invokeAction={ (action, rowPos) => this.invokeAction(action, rowPos) }
       />
       : null
 
@@ -72,6 +93,9 @@ class Spotlight extends React.Component {
           options={ this.props.options }
           onChange={ value => this.handleChange(value) }
           value={ value }
+          setSelectionIndex={ selectionIndex => this.setSelectionIndex(selectionIndex) }
+          invokeAction={ (action, rowPos) => this.invokeAction(action, rowPos) }
+          selectionIndex={ selectionIndex }
         />
         { list() }
         {/* <Preview></Preview> */}

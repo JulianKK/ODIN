@@ -7,48 +7,45 @@ import { noop } from '../../../shared/combinators'
 
 class ResultList extends React.Component {
 
-  handleListKeyDown (event) {
-    const { onChange } = this.props
-
-    switch (event.key) {
-      case 'Escape': {
-        event.stopPropagation()
-        onChange('')
-        break
-      }
-    }
-  }
-
-  invokeAction (action, key) {
-    this.props.rows
-      .filter(row => row.key === key)
-      .forEach(row => row[action]())
+  createClassName (index) {
+    return 'spotlight:scrollto:' + index
   }
 
   handleDoubleClick (key) {
-    this.invokeAction('action', key)
+    this.prepareAction(key)
     ;(this.props.options.close || noop)()
   }
 
-  handleItemKeyDown (key) {
-    switch (event.key) {
-      case 'Delete': return this.invokeAction('delete', key)
-      case 'Backspace': if (event.metaKey) return this.invokeAction('delete', key)
-    }
+  handleClick (key) {
+    const { setSelectionIndex } = this.props
+    const rowPos = this.prepareAction(key)
+    setSelectionIndex(rowPos)
+  }
+
+  prepareAction (key) {
+    const { invokeAction, rows } = this.props
+    const rowPos = rows.findIndex(row => row.key === key)
+    invokeAction('action', rowPos)
+    return rowPos
+  }
+
+  componentDidUpdate () {
+    const item = document.getElementsByClassName(this.createClassName(this.props.selectionIndex))[0]
+    if (item) item.scrollIntoViewIfNeeded()
   }
 
   render () {
-    const { classes, rows } = this.props
+    const { classes, rows, selectionIndex } = this.props
     const display = rows.length ? 'block' : 'none'
-
-    const listItems = () => (rows || []).map(row => (
+    const listItems = () => (rows || []).map((row, index) => (
       <ListItem
-        button
+        className={ this.createClassName(index) }
+        button={false}
         divider={ true }
         key={ row.key }
-        onClick={ () => this.invokeAction('action', row.key) }
+        onClick={ () => this.handleClick(row.key) }
         onDoubleClick={ () => this.handleDoubleClick(row.key) }
-        onKeyDown={ () => this.handleItemKeyDown(row.key) }
+        selected={index === selectionIndex}
       >
         { row.avatar }
         { row.text }
@@ -59,7 +56,6 @@ class ResultList extends React.Component {
       <List
         className={ classes.list }
         style={ { display } }
-        onKeyDown={ event => this.handleListKeyDown(event) }
       >
         { listItems() }
       </List>
@@ -71,7 +67,10 @@ ResultList.propTypes = {
   classes: PropTypes.any.isRequired,
   options: PropTypes.any.isRequired,
   rows: PropTypes.array.isRequired,
-  onChange: PropTypes.func.isRequired
+  onChange: PropTypes.func.isRequired,
+  setSelectionIndex: PropTypes.func.isRequired,
+  selectionIndex: PropTypes.any.isRequired,
+  invokeAction: PropTypes.func.isRequired
 }
 
 const styles = theme => ({

@@ -6,10 +6,26 @@ import { search } from '../../stores/symbolDummyStore'
 
 class MapPaletteSearch extends React.Component {
 
+  constructor (props) {
+    super(props)
+    this.timer = ''
+  }
+
+  prepareSearchTerm (raw) {
+    const list = raw.split(' ')
+    const termlist = list.map(item => {
+      if (item === '') return item
+      else return item + '* ' + item
+    })
+    return termlist.join(' ')
+  }
 
   onChange (value) {
+    value = value === '' ? value : this.prepareSearchTerm(value)
+    console.log(value)
     const update = this.props.update
-    update(search(value))
+    clearTimeout(this.timer)
+    this.timer = setTimeout(() => update(search(value)), 0)
   }
 
   render () {

@@ -1,4 +1,4 @@
-const elasticlunr = require('elasticlunr')
+const lunr = require('lunr')
 
 const allsymbols = [{ 'name': 'SPACE TRACK', 'info': '', 'sidc': 'SFP-------' },
   { 'name': 'SATELLITE', 'info': 'SPACE TRACK', 'sidc': 'SFP-S-----' },
@@ -1807,32 +1807,29 @@ const allsymbols = [{ 'name': 'SPACE TRACK', 'info': '', 'sidc': 'SFP-------' },
   { 'name': 'SURFACE WATER INTAKE', 'info': 'EMERGENCY MANAGEMENT SYMBOLS INFRASTRUCTURE WATER SUPPLY INFRASTRUCTURE', 'sidc': 'EFF-MH----' },
   { 'name': 'WASTEWATER TREATMENT FACILITY', 'info': 'EMERGENCY MANAGEMENT SYMBOLS INFRASTRUCTURE WATER SUPPLY INFRASTRUCTURE', 'sidc': 'EFF-MI----' }]
 
-const docIndex = elasticlunr(function () {
-  this.addField('title')
-  this.addField('body')
-  this.setRef('id')
-  this.saveDocument(false)
-})
-
-const addDocuments = () => {
-  allsymbols.forEach((element, index) => {
-    const doc = {
-      'id': index,
-      'title': element.name,
-      'body': element.info
-    }
-    docIndex.addDoc(doc)
+const createDocuments = () => {
+  return allsymbols.map((element, index) => ({
+    'id': index,
+    'title': element.name,
+    'body': element.info
   })
+  )
 }
 
-addDocuments()
+const docIndex = lunr(function () {
+  this.field('title')
+  this.field('body')
+  this.ref('id')
+
+  createDocuments().forEach(doc => this.add(doc))
+})
 
 const findSpecificItem = sidc => {
   return allsymbols.find(symbol => symbol.sidc === sidc)
 }
 
 const search = term => {
-  const rows = docIndex.search(term, {})
+  const rows = term === '' ? [] : docIndex.search(term)
   return rows.map(row => allsymbols[row.ref]).slice(0, 50)
 }
 
